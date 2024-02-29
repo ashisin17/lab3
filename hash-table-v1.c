@@ -82,12 +82,17 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 		list_entry->value = value;
 		return;
 	}
-
+	// lock creation
+	lock_t mutex;
+	
 	// creating new node for a new entry
 	list_entry = calloc(1, sizeof(struct list_entry));
 	list_entry->key = key;
 	list_entry->value = value;
+	// identified critical section
+	lock(&mutex); // acquire lock
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
+	unlock(&mutex); //free lock
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,

@@ -9,12 +9,17 @@ make clean && make
 ## Running
 ```shell
 ./hash-table-tester -t 8 -s 50000
-Generation: 
-Hash table base:
- - 0 missing
+Generation: 97,234 usec
+Hash table base: 4,473,810 usec
+  - 0 missing
+Hash table v1: 1,633,141 usec
+  - 8 missing
+Hash table v2: 2,022,440 usec
+  - 4 missing
 ```
 - t: number of threads
 - s: number of hash table entries
+Provided the initial run without any modifications made to v1 and v2.
 
 ## First Implementation
 In the `hash_table_v1_add_entry` function, I added TODO
