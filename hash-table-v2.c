@@ -8,8 +8,8 @@
 #include <pthread.h>
 
 // lock creation
-	pthread_mutex_t mutex;
-	// pthread_mutex_init(&mutex, NULL);
+	pthread_mutex_t mutex_2;
+	// pthread_mutex_init(&mutex_2, NULL);
 
 struct list_entry {
 	const char *key;
@@ -91,10 +91,10 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	list_entry->value = value;
 
 	// identified critical section
-	pthread_mutex_lock(&mutex); // lock it 
+	pthread_mutex_lock(&mutex_2); // lock it 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	pthread_mutex_unlock(&mutex);
-	// pthread_mutex_destroy(&mutex);
+	pthread_mutex_unlock(&mutex_2);
+	// pthread_mutex_destroy(&mutex_2);
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
