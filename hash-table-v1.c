@@ -83,16 +83,18 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 		return;
 	}
 	// lock creation
-	lock_t mutex;
-	
+	pthread_mutex_t mutex;
+	pthread_mutex_init(&mutex, NULL);
+
 	// creating new node for a new entry
 	list_entry = calloc(1, sizeof(struct list_entry));
 	list_entry->key = key;
 	list_entry->value = value;
 	// identified critical section
-	lock(&mutex); // acquire lock
+	pthread_mutex_lock(&mutex); // lock it 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	unlock(&mutex); //free lock
+	pthread_mutex_unlock(&mutex);
+	pthread_mutex_destroy(&mutex);
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,
