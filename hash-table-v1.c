@@ -7,6 +7,10 @@
 
 #include <pthread.h>
 
+// lock creation
+	pthread_mutex_t mutex;
+	pthread_mutex_init(&mutex, NULL);
+
 struct list_entry {
 	const char *key;
 	uint32_t value;
@@ -72,10 +76,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
                              const char *key,
                              uint32_t value)
 {
-	// lock creation
-	pthread_mutex_t mutex;
-	pthread_mutex_init(&mutex, NULL);
-	
 	// identified critical section
 	pthread_mutex_lock(&mutex); // lock it 
 	//locate the head we will be inserting into
