@@ -7,6 +7,10 @@
 
 #include <pthread.h>
 
+// lock creation
+	pthread_mutex_t mutex;
+	// pthread_mutex_init(&mutex, NULL);
+
 struct list_entry {
 	const char *key;
 	uint32_t value;
@@ -85,7 +89,12 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	list_entry = calloc(1, sizeof(struct list_entry));
 	list_entry->key = key;
 	list_entry->value = value;
+
+	// identified critical section
+	pthread_mutex_lock(&mutex); // lock it 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
+	pthread_mutex_unlock(&mutex);
+	// pthread_mutex_destroy(&mutex);
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
