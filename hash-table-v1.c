@@ -72,6 +72,9 @@ bool hash_table_v1_contains(struct hash_table_v1 *hash_table,
 	return list_entry != NULL;
 }
 
+// identified critical section
+	pthread_mutex_lock(&mutex); // lock it 
+	
 void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
                              const char *key,
                              uint32_t value)
@@ -91,8 +94,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	list_entry->key = key;
 	list_entry->value = value;
 	
-	// identified critical section
-	pthread_mutex_lock(&mutex); // lock it 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	pthread_mutex_unlock(&mutex);
 	// pthread_mutex_destroy(&mutex);
