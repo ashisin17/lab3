@@ -9,7 +9,7 @@
 
 // lock creation
 	pthread_mutex_t mutex;
-	pthread_mutex_init(&mutex, NULL);
+	// pthread_mutex_init(&mutex, NULL);
 
 struct list_entry {
 	const char *key;
@@ -96,7 +96,7 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	pthread_mutex_unlock(&mutex);
-	pthread_mutex_destroy(&mutex);
+	// pthread_mutex_destroy(&mutex);
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,
