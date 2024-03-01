@@ -36,7 +36,12 @@ struct hash_table_v1 *hash_table_v1_create()
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
 	}
-	pthread_mutex_init(&mutex_1, NULL); // initalize mutex
+	int init_result = pthread_mutex_init(&mutex_1, NULL);
+    if (init_result != 0) { // Mutex initialization failed
+        fprintf(stderr, "Error: Failed to initialize mutex\n");
+        return NULL;
+    }
+
 	return hash_table;
 }
 
@@ -79,11 +84,7 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
                              uint32_t value)
 {
 	// identified critical section
-	int lock_acquired = pthread_mutex_lock(&mutex_1); // lock it 
-	if(lock_acquired != 0) {
-		fprintf(stderr, "Error: Failed to acquire mutex lock in hash_table_v1_add_entry\n");
-        return;
-	}
+	pthread_mutex_lock(&mutex_1); // lock it 
 
 	//locate the head we will be inserting into
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);

@@ -7,6 +7,8 @@
 
 #include <pthread.h>
 
+#define NUM_MUTEXES 64
+
 // lock creation
 	pthread_mutex_t mutexes[NUM_MUTEXES];
 	// Initialize mutexes
@@ -39,6 +41,19 @@ struct hash_table_v2 *hash_table_v2_create()
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
 	}
+
+	// Initialize mutexes
+    for (int i = 0; i < NUM_MUTEXES; ++i) {
+        int init_result = pthread_mutex_init(&mutexes[i], NULL);
+		if (init_result != 0) {
+            fprintf(stderr, "Error: Failed to initialize mutex %d\n", i);
+			for (int j = 0; j < i; ++j) {
+                pthread_mutex_destroy(&mutexes[j]);
+            }
+            return NULL;
+        }
+    }
+
 	return hash_table;
 }
 
@@ -100,10 +115,6 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	pthread_mutex_unlock(&mutexes[i]);
-	// pthread_mutex_destroy(&mutex_2);
-	// for (int i = 0; i < NUM_MUTEXES; ++i) {
-    //     pthread_mutex_destroy(&mutexes[i]);
-    // }
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
@@ -129,4 +140,8 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 		}
 	}
 	free(hash_table);
+	// DESTROY mutexes
+	for (int i = 0; i < NUM_MUTEXES; ++i) {
+        pthread_mutex_destroy(&mutexes[i]);
+    }
 }
