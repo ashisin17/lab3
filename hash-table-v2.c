@@ -51,7 +51,8 @@ struct hash_table_v2 *hash_table_v2_create()
 			for (int j = 0; j < i; ++j) {
                 pthread_mutex_destroy(&mutexes[j]);
             }
-            return NULL;
+			free(hash_table);
+			exit(EXIT_FAILURE);
         }
     }
 
@@ -97,8 +98,12 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
                              uint32_t value)
 {
 	// Calculate index for mutex array
-    uint32_t i = value % NUM_MUTEXES;
-	pthread_mutex_lock(&mutexes[i]);
+    uint32_t i = bernstein_hash(key) % NUM_MUTEXES;
+	int lock_result = pthread_mutex_lock(&mutexes[i]);
+	if (lock_result != 0) {
+        fprintf(stderr, "Error: Failed to lock mutex\n");
+        exit(EXIT_FAILURE);
+    }
 
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
@@ -115,7 +120,11 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	list_entry->value = value;
 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	pthread_mutex_unlock(&mutexes[i]);
+	int unlock_result = pthread_mutex_unlock(&mutexes[i]);
+	if (unlock_result != 0) {
+        fprintf(stderr, "Error: Failed to unlock mutex\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,
@@ -143,6 +152,10 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 	free(hash_table);
 	// DESTROY mutexes
 	for (int i = 0; i < NUM_MUTEXES; ++i) {
-        pthread_mutex_destroy(&mutexes[i]);
+        int destroy_success = pthread_mutex_destroy(&mutexes[i]);
+		if (destroy_success != 0) {
+			fprintf(stderr, "Error: Failed to destroy mutex\n");
+			exit(EXIT_FAILURE);
+    	}
     }
 }

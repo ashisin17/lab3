@@ -39,7 +39,8 @@ struct hash_table_v1 *hash_table_v1_create()
 	int init_result = pthread_mutex_init(&mutex_1, NULL);
     if (init_result != 0) { // Mutex initialization failed
         fprintf(stderr, "Error: Failed to initialize mutex\n");
-        return NULL;
+		free(hash_table);
+        exit(EXIT_FAILURE);
     }
 
 	return hash_table;
@@ -84,7 +85,11 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
                              uint32_t value)
 {
 	// identified critical section
-	pthread_mutex_lock(&mutex_1); // lock it 
+	int lock_result = pthread_mutex_lock(&mutex_1); // lock it 
+	if (lock_result != 0) {
+        fprintf(stderr, "Error: Failed to lock mutex\n");
+        exit(EXIT_FAILURE);
+    }
 
 	//locate the head we will be inserting into
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
@@ -102,7 +107,11 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	list_entry->value = value;
 	
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	pthread_mutex_unlock(&mutex_1);
+	int unlock_result = pthread_mutex_unlock(&mutex_1);
+	if (unlock_result != 0) {
+        fprintf(stderr, "Error: Failed to unlock mutex\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,
@@ -128,5 +137,9 @@ void hash_table_v1_destroy(struct hash_table_v1 *hash_table)
 		}
 	}
 	free(hash_table);
-	pthread_mutex_destroy(&mutex_1); // destroy mutex
+	int destroy_success = pthread_mutex_destroy(&mutex_1); // destroy mutex
+	if (destroy_success != 0) {
+        fprintf(stderr, "Error: Failed to destroy mutex\n");
+        exit(EXIT_FAILURE);
+    }
 }
