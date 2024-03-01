@@ -7,9 +7,6 @@
 
 #include <pthread.h>
 
-// lock creation
-	pthread_mutex_t mutex_1;
-	// pthread_mutex_init(&mutex_1, NULL);
 
 struct list_entry {
 	const char *key;
@@ -25,6 +22,9 @@ struct hash_table_entry {
 
 struct hash_table_v1 {
 	struct hash_table_entry entries[HASH_TABLE_CAPACITY];
+	// lock creation
+	pthread_mutex_t mutex_1;
+	// pthread_mutex_init(&mutex_1, NULL);
 };
 
 struct hash_table_v1 *hash_table_v1_create()
