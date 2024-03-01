@@ -8,7 +8,7 @@
 
 #include <pthread.h>
 
-#define NUM_MUTEXES 64
+#define NUM_MUTEXES 4096
 
 // lock creation
 	pthread_mutex_t mutexes[NUM_MUTEXES];
