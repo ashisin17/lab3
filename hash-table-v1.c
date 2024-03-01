@@ -7,6 +7,9 @@
 
 #include <pthread.h>
 
+// lock creation
+	pthread_mutex_t mutex_1;
+	// pthread_mutex_init(&mutex_1, NULL);
 
 struct list_entry {
 	const char *key;
@@ -22,9 +25,6 @@ struct hash_table_entry {
 
 struct hash_table_v1 {
 	struct hash_table_entry entries[HASH_TABLE_CAPACITY];
-	// lock creation
-	pthread_mutex_t mutex_1;
-	// pthread_mutex_init(&mutex_1, NULL);
 };
 
 struct hash_table_v1 *hash_table_v1_create()
@@ -35,7 +35,7 @@ struct hash_table_v1 *hash_table_v1_create()
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
 	}
-	pthread_mutex_init(&mutex_1, NULL);
+	pthread_mutex_init(&mutex_1, NULL); // initalize mutex
 	return hash_table;
 }
 
@@ -78,7 +78,11 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
                              uint32_t value)
 {
 	// identified critical section
-	pthread_mutex_lock(&mutex_1); // lock it 
+	int lock_acquired = pthread_mutex_lock(&mutex_1); // lock it 
+	if(lock_acquired != 0) {
+		fprintf(stderr, "Error: Failed to acquire mutex lock in hash_table_v1_add_entry\n");
+        return;
+	}
 
 	//locate the head we will be inserting into
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
@@ -97,7 +101,6 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	pthread_mutex_unlock(&mutex_1);
-	// pthread_mutex_destroy(&mutex_1);
 }
 
 uint32_t hash_table_v1_get_value(struct hash_table_v1 *hash_table,
@@ -123,5 +126,5 @@ void hash_table_v1_destroy(struct hash_table_v1 *hash_table)
 		}
 	}
 	free(hash_table);
-	pthread_mutex_destroy(&mutex_1);
+	pthread_mutex_destroy(&mutex_1); // destroy mutex
 }
