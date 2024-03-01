@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/queue.h>
 
@@ -144,7 +145,7 @@ void hash_table_v1_destroy(struct hash_table_v1 *hash_table)
 	free(hash_table);
 	int destroy_success = pthread_mutex_destroy(&mutex_1); // destroy mutex
 	if (destroy_success != 0) {
-        free(hash_table)
+        free(hash_table);
         exit(errno);
     }
 }
