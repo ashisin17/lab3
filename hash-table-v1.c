@@ -15,8 +15,7 @@
 struct list_entry {
 	const char *key;
 	uint32_t value;
-	SLIST_ENTRY(list_entry) po
-	inters;
+	SLIST_ENTRY(list_entry) pointers;
 };
 
 SLIST_HEAD(list_head, list_entry);
