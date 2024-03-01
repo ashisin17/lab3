@@ -55,6 +55,15 @@ SLIST_INSERT_HEAD was specifically targeted because this is the main operation f
 ### Performance
 ```shell
 TODO how to run and results
+cs111@cs111 ~/lab3 (main %) » ./hash-table-tester -t 3 -s 500000
+Generation: 129,791 usec
+Hash table base: 42,268,091 usec
+  - 0 missing
+Hash table v1: 67,273,315 usec
+  - 0 missing
+Hash table v2: 29,076,248 usec
+  - 0 missing
+
 ```
 
 TODO more results, speedup measurement, and analysis on v2

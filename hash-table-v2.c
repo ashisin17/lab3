@@ -8,8 +8,12 @@
 #include <pthread.h>
 
 // lock creation
-	pthread_mutex_t mutex_2;
-	// pthread_mutex_init(&mutex_2, NULL);
+	pthread_mutex_t mutexes[NUM_MUTEXES];
+	// Initialize mutexes
+    // for (int i = 0; i < NUM_MUTEXES; ++i) {
+    //     pthread_mutex_init(&mutexes[i], NULL);
+    // }
+
 
 struct list_entry {
 	const char *key;
@@ -76,6 +80,10 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
                              const char *key,
                              uint32_t value)
 {
+	// Calculate index for mutex array
+    uint32_t i = value % NUM_MUTEXES;
+	pthread_mutex_lock(&mutexes[i]);
+
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
@@ -90,11 +98,12 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	list_entry->key = key;
 	list_entry->value = value;
 
-	// identified critical section
-	pthread_mutex_lock(&mutex_2); // lock it 
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
-	pthread_mutex_unlock(&mutex_2);
+	pthread_mutex_unlock(&mutexes[i]);
 	// pthread_mutex_destroy(&mutex_2);
+	// for (int i = 0; i < NUM_MUTEXES; ++i) {
+    //     pthread_mutex_destroy(&mutexes[i]);
+    // }
 }
 
 uint32_t hash_table_v2_get_value(struct hash_table_v2 *hash_table,

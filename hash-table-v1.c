@@ -35,6 +35,7 @@ struct hash_table_v1 *hash_table_v1_create()
 		struct hash_table_entry *entry = &hash_table->entries[i];
 		SLIST_INIT(&entry->list_head);
 	}
+	pthread_mutex_init(&mutex_1, NULL);
 	return hash_table;
 }
 
@@ -122,4 +123,5 @@ void hash_table_v1_destroy(struct hash_table_v1 *hash_table)
 		}
 	}
 	free(hash_table);
+	pthread_mutex_destroy(&mutex_1);
 }
